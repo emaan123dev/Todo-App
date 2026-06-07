@@ -80,15 +80,16 @@ router.delete("/deleteTask/:id", async (req, res) => {
 });
 //get task 
 router.get("/getTasks/:id", async (req, res) => {
-
    try {
-
       const existingUser = await User.findById(req.params.id);
+
       if (!existingUser) {
          return res.status(404).json({
+            success: false,
             message: "User not found"
          });
       }
+
       const tasks = await List.find({
          user: req.params.id
       }).sort({ createdAt: -1 });
@@ -96,18 +97,18 @@ router.get("/getTasks/:id", async (req, res) => {
       if (tasks.length === 0) {
          return res.status(200).json({
             success: true,
+            tasks: [],
             message: "No tasks available for this user."
          });
       }
 
       return res.status(200).json({
          success: true,
-         message: "Tasks fetched successfully",
-         tasks
+         tasks,
+         message: "Tasks fetched successfully"
       });
 
    } catch (error) {
-
       console.log(error);
 
       return res.status(500).json({
@@ -116,5 +117,4 @@ router.get("/getTasks/:id", async (req, res) => {
       });
    }
 });
-
 module.exports = router;
